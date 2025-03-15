@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons'; // Install with: npm install @expo/vector-icons
+import { Ionicons } from '@expo/vector-icons';
+import { ThemeProvider } from 'styled-components/native';
 
 // Screens
 import DashboardScreen from './src/screens/Dashboard';
@@ -14,7 +15,28 @@ import ARScreen from './src/screens/AR';
 import SecurityScreen from './src/screens/Security';
 import ContentScreen from './src/screens/Content';
 
-// TypeScript types for navigation
+// Theme
+const theme = {
+  colors: {
+    primary: '#00FF88',
+    background: '#0A0A0A',
+    card: '#1A1A1A',
+    text: '#FFFFFF',
+    border: '#2D2D2D',
+  },
+  spacing: {
+    s: 8,
+    m: 16,
+    l: 24,
+    xl: 32,
+  },
+  icons: {
+    sm: 20,
+    md: 24,
+    lg: 28,
+  },
+};
+
 type RootStackParamList = {
   Dashboard: undefined;
   Tasks: undefined;
@@ -31,51 +53,69 @@ const Tab = createBottomTabNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: keyof typeof Ionicons.glyphMap = 'help'; // Fallback icon
-
-            // Assign icons based on route name
-            if (route.name === 'Dashboard') iconName = 'home';
-            if (route.name === 'Tasks') iconName = 'list';
-            if (route.name === 'Health') iconName = 'heart';
-            if (route.name === 'Finance') iconName = 'cash';
-            if (route.name === 'News') iconName = 'newspaper';
-            if (route.name === 'Travel') iconName = 'airplane';
-            if (route.name === 'AR') iconName = 'camera';
-            if (route.name === 'Security') iconName = 'shield';
-            if (route.name === 'Content') iconName = 'create';
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#00FF88', // Neon green for active tab
-          tabBarInactiveTintColor: 'gray', // Gray for inactive tabs
-          tabBarStyle: {
-            backgroundColor: '#1A1A1A', // Dark background for tab bar
-            borderTopWidth: 0, // Remove top border
-          },
-          headerStyle: {
-            backgroundColor: '#000', // Dark background for header
-          },
-          headerTintColor: '#fff', // White text for header
-        })}
-      >
-        <Tab.Screen 
-          name="Dashboard" 
-          component={DashboardScreen}
-          options={{ title: 'LifeSync' }} // Custom title for Dashboard
-        />
-        <Tab.Screen name="Tasks" component={TasksScreen} />
-        <Tab.Screen name="Health" component={HealthScreen} />
-        <Tab.Screen name="Finance" component={FinanceScreen} />
-        <Tab.Screen name="News" component={NewsScreen} />
-        <Tab.Screen name="Travel" component={TravelScreen} />
-        <Tab.Screen name="AR" component={ARScreen} />
-        <Tab.Screen name="Security" component={SecurityScreen} />
-        <Tab.Screen name="Content" component={ContentScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <ThemeProvider theme={theme}>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ color, size }) => {
+              const iconConfig: Record<keyof RootStackParamList, keyof typeof Ionicons.glyphMap> = {
+                Dashboard: 'home',
+                Tasks: 'list',
+                Health: 'heart',
+                Finance: 'cash',
+                News: 'newspaper',
+                Travel: 'airplane',
+                AR: 'camera',
+                Security: 'shield',
+                Content: 'create',
+              };
+              
+              return (
+                <Ionicons 
+                  name={iconConfig[route.name]} 
+                  size={theme.icons.md} 
+                  color={color} 
+                />
+              );
+            },
+            tabBarActiveTintColor: theme.colors.primary,
+            tabBarInactiveTintColor: theme.colors.text,
+            tabBarStyle: {
+              backgroundColor: theme.colors.card,
+              borderTopWidth: 0,
+              paddingBottom: theme.spacing.s,
+              height: theme.spacing.xl * 2,
+            },
+            tabBarLabelStyle: {
+              fontSize: 12,
+              marginBottom: theme.spacing.s,
+            },
+            headerStyle: {
+              backgroundColor: theme.colors.background,
+              shadowColor: 'transparent',
+            },
+            headerTitleStyle: {
+              color: theme.colors.text,
+              fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+          })}
+        >
+          <Tab.Screen 
+            name="Dashboard" 
+            component={DashboardScreen}
+            options={{ title: 'LifeSync Dashboard' }}
+          />
+          <Tab.Screen name="Tasks" component={TasksScreen} />
+          <Tab.Screen name="Health" component={HealthScreen} />
+          <Tab.Screen name="Finance" component={FinanceScreen} />
+          <Tab.Screen name="News" component={NewsScreen} />
+          <Tab.Screen name="Travel" component={TravelScreen} />
+          <Tab.Screen name="AR" component={ARScreen} />
+          <Tab.Screen name="Security" component={SecurityScreen} />
+          <Tab.Screen name="Content" component={ContentScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }

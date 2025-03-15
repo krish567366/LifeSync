@@ -1,0 +1,10 @@
+Resources:
+  LifeSyncAPI:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          FIREBASE_API_KEY: !Ref FirebaseApiKey
